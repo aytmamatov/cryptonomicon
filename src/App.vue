@@ -3,6 +3,7 @@
     <div class="container">
       <div class="w-full my-4" />
       <add-ticker
+        :all-ticker-tips="allTickerTips"
         :disabled="tooManyTickersAdded"
         @add-ticker="add"
       />
@@ -141,7 +142,7 @@ export default {
   name: "App",
 
   components: {
-    AddTicker
+    AddTicker,
   },
 
   data() {
@@ -150,6 +151,8 @@ export default {
 
       tickers: [],
       selectedTicker: null,
+
+      allTickerTips: {},
 
       graph: [],
       maxGraphElements: 1,
@@ -235,6 +238,8 @@ export default {
   },
 
   created() {
+    this.sendRequest()
+
     const windowData = Object.fromEntries(
       new URL(window.location).searchParams.entries()
     );
@@ -330,6 +335,13 @@ export default {
         this.selectedTicker = null;
       }
       unsubscribeFromTicker(tickerToRemove.name);
+    },
+
+    async sendRequest() {
+      const response = await fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true')
+      const data = await response.json()
+
+      this.allTickerTips = data?.Data
     }
   }
 };

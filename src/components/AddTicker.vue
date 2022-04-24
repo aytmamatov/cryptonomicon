@@ -2,23 +2,29 @@
   <section>
     <div class="flex">
       <div class="max-w-xs">
-        <label for="wallet" class="block text-sm font-medium text-gray-700"
-          >Тикер</label
-        >
+        <label
+          for="wallet"
+          class="block text-sm font-medium text-gray-700"
+        >Тикер</label>
         <div class="mt-1 relative rounded-md shadow-md">
           <input
+            id="wallet"
             v-model="ticker"
-            @keydown.enter="add"
             type="text"
             name="wallet"
-            id="wallet"
             class="block w-full pr-10 border-gray-300 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
             placeholder="Например DOGE"
-          />
+            @keydown.enter="add"
+          >
         </div>
       </div>
     </div>
-    <add-button @click="add" type="button" :disabled="disabled" class="my-4" />
+    <add-button
+      type="button"
+      :disabled="disabled"
+      class="my-4"
+      @click="add"
+    />
   </section>
 </template>
 <script>
@@ -34,6 +40,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    allTickerTips: {
+      type: Object,
+      required: false,
+      default: () => {}
     }
   },
 
@@ -43,6 +54,12 @@ export default {
 
   data() {
     return { ticker: "" };
+  },
+
+  watch: {
+    allTickerTips() {
+      console.log(this.allTickerTips)
+    }
   },
 
   methods: {
