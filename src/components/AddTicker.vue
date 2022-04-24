@@ -17,6 +17,18 @@
             @keydown.enter="add"
           >
         </div>
+        <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
+          <span 
+            v-for="(tickerTip) in tickerTips"
+            :key="tickerTip.Id"
+            class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer"
+          >
+            {{ tickerTip.Symbol }}
+          </span>
+        </div>
+        <div class="text-sm text-red-600">
+          Такой тикер уже добавлен
+        </div>
       </div>
     </div>
     <add-button
@@ -42,9 +54,9 @@ export default {
       default: false
     },
     allTickerTips: {
-      type: Object,
+      type: Array,
       required: false,
-      default: () => {}
+      default: () => []
     }
   },
 
@@ -53,12 +65,21 @@ export default {
   },
 
   data() {
-    return { ticker: "" };
+    return { 
+      ticker: "",
+      tickerTips: []
+    };
   },
 
   watch: {
+    ticker(currentTicker) {
+      const regex = new RegExp(currentTicker, "gi")
+      this.tickerTips = this.allTickerTips.filter(
+        ticker => ticker.FullName?.match(regex) || ticker.Symbol?.match(regex)
+      ).slice(0, 5);
+    },
     allTickerTips() {
-      console.log(this.allTickerTips)
+      this.tickerTips = this.allTickerTips.slice(0, 5)
     }
   },
 

@@ -152,7 +152,7 @@ export default {
       tickers: [],
       selectedTicker: null,
 
-      allTickerTips: {},
+      allTickerTips: [],
 
       graph: [],
       maxGraphElements: 1,
@@ -341,7 +341,7 @@ export default {
       const response = await fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true')
       const data = await response.json()
 
-      this.allTickerTips = data?.Data
+      this.allTickerTips = Object.values(data?.Data)
     }
   }
 };
