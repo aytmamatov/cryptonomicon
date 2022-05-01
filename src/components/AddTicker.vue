@@ -22,7 +22,7 @@
             v-for="tickerTip in tickerTips"
             :key="tickerTip.Id"
             class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer"
-            @click="add(tickerTip)"
+            @click="clickTickerTip(tickerTip)"
           >
             {{ tickerTip.Symbol }}
           </span>
@@ -102,21 +102,26 @@ export default {
   },
 
   methods: {
-    add(currentTicker) {
-      if (this.ticker.length === 0) {
-        return;
+    sendTicker(currentTicker) {
+      this.$emit("add-ticker", currentTicker);
+      this.ticker = "";
+    },
+    add() {
+      if (this.ticker) {
+        this.sendTicker(this.ticker)
       }
-
+    },
+    clickTickerTip(currentTicker) {
       this.tickers.forEach((ticker) => {
         if (ticker.name.includes(currentTicker.FullName))
           this.tickerExists = true;
       });
 
+
       if (!this.tickerExists) {
-        this.$emit("add-ticker", currentTicker?.FullName || this.ticker);
-        this.ticker = "";
+        this.sendTicker(currentTicker?.FullName)
       }
-    },
+    }
   },
 };
 </script>
