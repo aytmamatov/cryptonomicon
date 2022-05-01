@@ -17,7 +17,10 @@
             @keydown.enter="add"
           >
         </div>
-        <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
+        <div
+          v-if="tickerTips.length"
+          class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap"
+        >
           <span
             v-for="tickerTip in tickerTips"
             :key="tickerTip.Id"
