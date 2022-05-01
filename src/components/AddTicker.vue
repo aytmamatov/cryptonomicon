@@ -22,6 +22,7 @@
             v-for="(tickerTip) in tickerTips"
             :key="tickerTip.Id"
             class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer"
+            @click="add(tickerTip)"
           >
             {{ tickerTip.Symbol }}
           </span>
@@ -84,13 +85,13 @@ export default {
   },
 
   methods: {
-    add() {
+    add(currentTicker) {
       if (this.ticker.length === 0) {
         return;
       }
-      this.$emit("add-ticker", this.ticker);
+      this.$emit("add-ticker", currentTicker?.FullName || this.ticker);
       this.ticker = "";
-    }
+    },
   }
 };
 </script>
