@@ -3,6 +3,7 @@
     <div class="container">
       <div class="w-full my-4" />
       <add-ticker
+        :tickers="tickers"
         :all-ticker-tips="allTickerTips"
         :disabled="tooManyTickersAdded"
         @add-ticker="add"
@@ -319,6 +320,7 @@ export default {
       };
 
       this.tickers = [...this.tickers, currentTicker];
+
       this.filter = "";
       subscribeToTicker(currentTicker.name, newPrice =>
         this.updateTicker(currentTicker.name, newPrice)

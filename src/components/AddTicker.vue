@@ -18,8 +18,8 @@
           >
         </div>
         <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
-          <span 
-            v-for="(tickerTip) in tickerTips"
+          <span
+            v-for="tickerTip in tickerTips"
             :key="tickerTip.Id"
             class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer"
             @click="add(tickerTip)"
@@ -27,7 +27,10 @@
             {{ tickerTip.Symbol }}
           </span>
         </div>
-        <div class="text-sm text-red-600">
+        <div
+          v-if="tickerExists"
+          class="text-sm text-red-600"
+        >
           Такой тикер уже добавлен
         </div>
       </div>
@@ -45,43 +48,57 @@ import AddButton from "./AddButton.vue";
 
 export default {
   components: {
-    AddButton
+    AddButton,
   },
 
   props: {
     disabled: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     allTickerTips: {
       type: Array,
       required: false,
-      default: () => []
-    }
+      default: () => [],
+    },
+    tickers: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
   },
 
   emits: {
-    "add-ticker": value => typeof value === "string" && value.length > 0
+    "add-ticker": (value) => typeof value === "string" && value.length > 0,
   },
 
   data() {
-    return { 
+    return {
       ticker: "",
-      tickerTips: []
+      tickerTips: [],
+      tickerExists: false,
     };
   },
 
   watch: {
     ticker(currentTicker) {
-      const regex = new RegExp(currentTicker, "gi")
-      this.tickerTips = this.allTickerTips.filter(
-        ticker => ticker.FullName?.match(regex) || ticker.Symbol?.match(regex)
-      ).slice(0, 5);
+
+      this.tickers.forEach((ticker) => {
+        this.tickerExists = currentTicker && ticker.name.includes(currentTicker) ? true : false
+      });
+
+      const regex = new RegExp(currentTicker, "gi");
+      this.tickerTips = this.allTickerTips
+        .filter(
+          (ticker) =>
+            ticker.FullName?.match(regex) || ticker.Symbol?.match(regex)
+        )
+        .slice(0, 5);
     },
     allTickerTips() {
-      this.tickerTips = this.allTickerTips.slice(0, 5)
-    }
+      this.tickerTips = this.allTickerTips.slice(0, 5);
+    },
   },
 
   methods: {
@@ -89,9 +106,17 @@ export default {
       if (this.ticker.length === 0) {
         return;
       }
-      this.$emit("add-ticker", currentTicker?.FullName || this.ticker);
-      this.ticker = "";
+
+      this.tickers.forEach((ticker) => {
+        if (ticker.name.includes(currentTicker.FullName))
+          this.tickerExists = true;
+      });
+
+      if (!this.tickerExists) {
+        this.$emit("add-ticker", currentTicker?.FullName || this.ticker);
+        this.ticker = "";
+      }
     },
-  }
+  },
 };
 </script>
