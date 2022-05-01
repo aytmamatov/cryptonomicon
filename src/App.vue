@@ -33,7 +33,7 @@
             v-for="t in paginatedTickers"
             :key="t.name"
             :class="{
-              'border-4': selectedTicker === t
+              'border-4': selectedTicker === t,
             }"
             class="bg-white overflow-hidden shadow rounded-lg border-purple-800 border-solid cursor-pointer"
             @click="select(t)"
@@ -158,7 +158,7 @@ export default {
       graph: [],
       maxGraphElements: 1,
 
-      page: 1
+      page: 1,
     };
   },
 
@@ -176,7 +176,7 @@ export default {
     },
 
     filteredTickers() {
-      return this.tickers.filter(ticker => ticker.name.includes(this.filter));
+      return this.tickers.filter((ticker) => ticker.name.includes(this.filter));
     },
 
     paginatedTickers() {
@@ -196,16 +196,16 @@ export default {
       }
 
       return this.graph.map(
-        price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
+        (price) => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       );
     },
 
     pageStateOptions() {
       return {
         filter: this.filter,
-        page: this.page
+        page: this.page,
       };
-    }
+    },
   },
 
   watch: {
@@ -235,11 +235,11 @@ export default {
         document.title,
         `${window.location.pathname}?filter=${value.filter}&page=${value.page}`
       );
-    }
+    },
   },
 
-  created() {
-    this.sendRequest()
+  async created() {
+    await this.sendRequest();
 
     const windowData = Object.fromEntries(
       new URL(window.location).searchParams.entries()
@@ -247,7 +247,7 @@ export default {
 
     const VALID_KEYS = ["filter", "page"];
 
-    VALID_KEYS.forEach(key => {
+    VALID_KEYS.forEach((key) => {
       if (windowData[key]) {
         this[key] = windowData[key];
       }
@@ -265,12 +265,14 @@ export default {
 
     if (tickersData) {
       this.tickers = JSON.parse(tickersData);
-      this.tickers.forEach(ticker => {
-        subscribeToTicker(ticker.name, newPrice =>
+      this.tickers.forEach((ticker) => {
+        subscribeToTicker(ticker.name, (newPrice) =>
           this.updateTicker(ticker.name, newPrice)
         );
       });
     }
+
+    this.sortTickerTips();
 
     setInterval(this.updateTickers, 5000);
   },
@@ -294,8 +296,8 @@ export default {
 
     updateTicker(tickerName, price) {
       this.tickers
-        .filter(t => t.name === tickerName)
-        .forEach(t => {
+        .filter((t) => t.name === tickerName)
+        .forEach((t) => {
           if (t === this.selectedTicker) {
             this.graph.push(price);
             while (this.graph.length > this.maxGraphElements) {
@@ -316,14 +318,25 @@ export default {
     add(ticker) {
       const currentTicker = {
         name: ticker,
-        price: "-"
+        price: "-",
       };
 
       this.tickers = [...this.tickers, currentTicker];
 
       this.filter = "";
-      subscribeToTicker(currentTicker.name, newPrice =>
+      subscribeToTicker(currentTicker.name, (newPrice) =>
         this.updateTicker(currentTicker.name, newPrice)
+      );
+
+      this.sortTickerTips();
+    },
+
+    sortTickerTips() {
+      this.allTickerTips = this.allTickerTips.filter(
+        (filteredTip) =>
+          !this.tickers.filter((ticker) =>
+            ticker.name.includes(filteredTip.FullName)
+          ).length
       );
     },
 
@@ -332,7 +345,7 @@ export default {
     },
 
     handleDelete(tickerToRemove) {
-      this.tickers = this.tickers.filter(t => t !== tickerToRemove);
+      this.tickers = this.tickers.filter((t) => t !== tickerToRemove);
       if (this.selectedTicker === tickerToRemove) {
         this.selectedTicker = null;
       }
@@ -340,11 +353,13 @@ export default {
     },
 
     async sendRequest() {
-      const response = await fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true')
-      const data = await response.json()
+      const response = await fetch(
+        "https://min-api.cryptocompare.com/data/all/coinlist?summary=true"
+      );
+      const data = await response.json();
 
-      this.allTickerTips = Object.values(data?.Data)
-    }
-  }
+      this.allTickerTips = Object.values(data?.Data);
+    },
+  },
 };
 </script>

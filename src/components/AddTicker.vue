@@ -83,7 +83,6 @@ export default {
 
   watch: {
     ticker(currentTicker) {
-
       this.tickers.forEach((ticker) => {
         this.tickerExists = currentTicker && ticker.name.includes(currentTicker) ? true : false
       });
@@ -96,6 +95,7 @@ export default {
         )
         .slice(0, 5);
     },
+
     allTickerTips() {
       this.tickerTips = this.allTickerTips.slice(0, 5);
     },
@@ -106,17 +106,18 @@ export default {
       this.$emit("add-ticker", currentTicker);
       this.ticker = "";
     },
+
     add() {
       if (this.ticker) {
         this.sendTicker(this.ticker)
       }
     },
+
     clickTickerTip(currentTicker) {
       this.tickers.forEach((ticker) => {
         if (ticker.name.includes(currentTicker.FullName))
           this.tickerExists = true;
       });
-
 
       if (!this.tickerExists) {
         this.sendTicker(currentTicker?.FullName)
